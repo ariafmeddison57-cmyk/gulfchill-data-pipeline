@@ -1,0 +1,23 @@
+# Environment & IDE
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+
+# Large data files
+*.csv
+*.xlsx
+*.parquet
+
+# OS artifacts
+Thumbs.db
+Desktop.ini
+.DS_Store
