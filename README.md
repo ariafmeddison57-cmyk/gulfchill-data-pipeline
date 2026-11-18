@@ -71,6 +71,12 @@ A Python audit harness verifying data pipeline integrity:
 * Generates completeness ratios across nullable telematics stamps.
 * Reports descriptive statistics for freight distance, pallet weights, and fuel consumption.
 
+### 4. Cross-System Reconciliation Engine (`sql/04_system_reconciliation.sql`)
+Two-way automated audit reconciling Transport Management System (TMS) dispatches against ERP financial billing:
+* **Two-Way Skew Detection:** Leverages `FULL OUTER JOIN` to isolate unbilled deliveries (`MISSING_INVOICE`) and phantom billing records (`ORPHAN_INVOICE`).
+* **Defensive Key Resolution:** Utilizes `COALESCE(s.shipment_id, i.shipment_id)` to preserve tracking references across orphaned records.
+* **Audit State Attribution:** Segregates valid operational cancellations from unbilled pipeline backlog without false positive payment assumptions.
+
 ---
 
 ## 📁 Repository Structure
@@ -82,7 +88,8 @@ gulfchill-data-pipeline/
 ├── sql/
 │   ├── 01_schema_ddl.sql             # Full DDL constraints, keys, and table definitions
 │   ├── 02_ar_aging_pipeline.sql      # Accounts receivable reconciliation & aging engine
-│   └── 03_window_functions.sql       # Advanced analytical ranking and aggregate window queries
+│   ├── 03_window_functions.sql       # Advanced analytical ranking and aggregate window queries
+│   └── 04_system_reconciliation.sql  # TMS vs ERP reconciliation audit engine
 └── scripts/
     └── data_profiling.py             # Python data quality audit and profiling suite
 ```
