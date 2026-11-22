@@ -82,6 +82,11 @@ High-frequency sensor stream filter isolating the single latest telemetry ping p
 * **Network Burst Deduplication:** Utilizes `ROW_NUMBER() OVER(PARTITION BY shipment_id ORDER BY recorded_at DESC)` to prioritize the latest valid telemetry record over stale historical pings.
 * **Staging Filter Pattern:** Employs derived table filtering (`WHERE reading_version = 1`) to feed clean, deduplicated datasets into downstream dispatch dashboards.
 
+### 6. Incremental Ingestion & Lineage Stacking Engine (`sql/06_incremental_staging_union.sql`)
+Multi-source dataset consolidation injecting runtime audit lineage across operational freight states:
+* **Zero-Deduplication Overhead:** Employs `UNION ALL` to unify real-time dispatch streams with cold historical batches without expensive memory sorting.
+* **Metadata & Lineage Stamping:** Enriches every row with runtime ingestion timestamps (`GETDATE()`) and origin classification tags (`historical_record`, `livestream`, `Void`).
+
 ---
 
 ## 📁 Repository Structure
@@ -95,7 +100,8 @@ gulfchill-data-pipeline/
 │   ├── 02_ar_aging_pipeline.sql      # Accounts receivable reconciliation & aging engine
 │   ├── 03_window_functions.sql       # Advanced analytical ranking and aggregate window queries
 │   ├── 04_system_reconciliation.sql  # TMS vs ERP reconciliation audit engine
-│   └── 05_telematics_deduplication.sql # IoT telematics deduplication pipeline
+│   ├── 05_telematics_deduplication.sql # IoT telematics deduplication pipeline
+│   └── 06_incremental_staging_union.sql # Incremental staging & lineage stacking engine
 └── scripts/
     └── data_profiling.py             # Python data quality audit and profiling suite
 ```
