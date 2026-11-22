@@ -77,6 +77,11 @@ Two-way automated audit reconciling Transport Management System (TMS) dispatches
 * **Defensive Key Resolution:** Utilizes `COALESCE(s.shipment_id, i.shipment_id)` to preserve tracking references across orphaned records.
 * **Audit State Attribution:** Segregates valid operational cancellations from unbilled pipeline backlog without false positive payment assumptions.
 
+### 5. IoT Telematics Deduplication Engine (`sql/05_telematics_deduplication.sql`)
+High-frequency sensor stream filter isolating the single latest telemetry ping per shipment:
+* **Network Burst Deduplication:** Utilizes `ROW_NUMBER() OVER(PARTITION BY shipment_id ORDER BY recorded_at DESC)` to prioritize the latest valid telemetry record over stale historical pings.
+* **Staging Filter Pattern:** Employs derived table filtering (`WHERE reading_version = 1`) to feed clean, deduplicated datasets into downstream dispatch dashboards.
+
 ---
 
 ## 📁 Repository Structure
@@ -89,7 +94,8 @@ gulfchill-data-pipeline/
 │   ├── 01_schema_ddl.sql             # Full DDL constraints, keys, and table definitions
 │   ├── 02_ar_aging_pipeline.sql      # Accounts receivable reconciliation & aging engine
 │   ├── 03_window_functions.sql       # Advanced analytical ranking and aggregate window queries
-│   └── 04_system_reconciliation.sql  # TMS vs ERP reconciliation audit engine
+│   ├── 04_system_reconciliation.sql  # TMS vs ERP reconciliation audit engine
+│   └── 05_telematics_deduplication.sql # IoT telematics deduplication pipeline
 └── scripts/
     └── data_profiling.py             # Python data quality audit and profiling suite
 ```
