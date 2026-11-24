@@ -87,6 +87,11 @@ Multi-source dataset consolidation injecting runtime audit lineage across operat
 * **Zero-Deduplication Overhead:** Employs `UNION ALL` to unify real-time dispatch streams with cold historical batches without expensive memory sorting.
 * **Metadata & Lineage Stamping:** Enriches every row with runtime ingestion timestamps (`GETDATE()`) and origin classification tags (`historical_record`, `livestream`, `Void`).
 
+### 7. Cold-Chain SLA Thermal Breach Detection (`sql/07_sla_thermal_breach_detection.sql`)
+Time-series event classification engine tracking consecutive sensor fluctuations for pharma/dairy regulatory compliance:
+* **Time-Series Value Windows:** Implements `LAG()` and `LEAD()` partitioned strictly by `shipment_id` to evaluate temperature delta across consecutive pings without table self-joins.
+* **SLA Shock Classification:** Identifies thermal spikes ($\ge +2.0^\circ\text{C}$), rapid chilling events ($\le -2.0^\circ\text{C}$), and trip origins (`TRIP_START`).
+
 ---
 
 ## 📁 Repository Structure
@@ -101,7 +106,8 @@ gulfchill-data-pipeline/
 │   ├── 03_window_functions.sql       # Advanced analytical ranking and aggregate window queries
 │   ├── 04_system_reconciliation.sql  # TMS vs ERP reconciliation audit engine
 │   ├── 05_telematics_deduplication.sql # IoT telematics deduplication pipeline
-│   └── 06_incremental_staging_union.sql # Incremental staging & lineage stacking engine
+│   ├── 06_incremental_staging_union.sql # Incremental staging & lineage stacking engine
+│   └── 07_sla_thermal_breach_detection.sql # Automated SLA thermal breach detection
 └── scripts/
     └── data_profiling.py             # Python data quality audit and profiling suite
 ```
